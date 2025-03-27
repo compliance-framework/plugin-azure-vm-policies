@@ -2,7 +2,7 @@ package compliance_framework.template.azure_virtual_machines._deny_missing_tags
 
 test_violation_with_missing_tags if {
     count(violation) == 1 with input as {
-        "InstanceID": "i-1234567890abcdef0",
+        "Name": "test-instance",
         "Tags": [
             {"Key": "Name", "Value": "test-instance"},
             {"Key": "Environment", "Value": "prod"}
@@ -12,7 +12,7 @@ test_violation_with_missing_tags if {
 
 test_no_violation_with_all_tags if {
     count(violation) == 0 with input as {
-        "InstanceID": "i-1234567890abcdef0",
+        "Name": "test-instance",
         "Tags": [
             {"Key": "Name", "Value": "test-instance"},
             {"Key": "Environment", "Value": "prod"},
