@@ -1,27 +1,49 @@
-package compliance_framework.template.azure_virtual_machines._deny_missing_tags
+package compliance_framework.deny_missing_tags
 
 test_violation_with_missing_tags if {
     count(violation) == 1 with input as {
-        "Name": "test-instance",
-        "Tags": [
-            {"Key": "Name", "Value": "test-instance"},
-            {"Key": "Environment", "Value": "prod"}
-        ]
+        "instance": {
+            "name": "test-instance",
+            "tags": {
+                "name": "test-instance",
+                "environment": "prod",
+            }
+        }
     }
 }
 
 test_no_violation_with_all_tags if {
     count(violation) == 0 with input as {
-        "Name": "test-instance",
-        "Tags": [
-            {"Key": "Name", "Value": "test-instance"},
-            {"Key": "Environment", "Value": "prod"},
-            {"Key": "Security", "Value": "high"},
-            {"Key": "Compliance", "Value": "yes"},
-            {"Key": "Application", "Value": "app1"},
-            {"Key": "Cost Center", "Value": "cc1"},
-            {"Key": "Project", "Value": "project1"},
-            {"Key": "Owner", "Value": "owner1"}
-        ]
+        "instance": {
+            "name": "test-instance",
+            "tags": {
+                "name": "test-instance",
+                "environment": "prod",
+                "security": "high",
+                "compliance": "yes",
+                "application": "app1",
+                "cost center": "cc1",
+                "project": "project1",
+                "owner": "owner1"
+            }
+        }
+    }
+}
+
+test_no_violation_with_all_regardless_of_case if {
+    count(violation) == 0 with input as {
+        "instance": {
+            "name": "test-instance",
+            "tags": {
+                "NAME": "test-instance",
+                "Environment": "prod",
+                "sEcUrItY": "high",
+                "CoMpLiAnCe": "yes",
+                "application": "app1",
+                "cost center": "cc1",
+                "project": "project1",
+                "owner": "owner1"
+            }
+        }
     }
 }

@@ -1,9 +1,9 @@
-package compliance_framework.template.azure_virtual_machines._deny_public_ip
+package compliance_framework.deny_public_ip
 
-violation[{
-    "title": "Check to ensure Azure VM does not have a public IP",
-    "description": sprintf("VM '%v' (%v) has a public IP address, which is not allowed.", [input.Name, input.VMID]),
-    "remarks": "Ensure the Azure VM does not have a public IP address."
-}] if {
-    input.Properties.networkDetails.publicIPAddress != null
+violation[{}] if {
+	public_ips := [input.network_interfaces[_].public_ips[_].properties.ipAddress]
+    some public_ip in public_ips
 }
+
+title := "Azure Virtual Machines should not have public IP addresses"
+description := "Ensure that Azure Virtual Machines do not have public IP addresses assigned to them. Public IPs can expose VMs to the internet, increasing the risk of unauthorized access and attacks."
