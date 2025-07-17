@@ -137,7 +137,7 @@ test_violation_with_open_inbound_custom_rule if {
     }
 }
 
-test_no_violation_with_mutltiple_priorities if {
+test_no_violation_with_multiple_priorities if {
     count(violation) == 0 with input as {
         "instance": {
             "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-ccf/providers/Microsoft.Compute/virtualMachines/vm-compliant",
