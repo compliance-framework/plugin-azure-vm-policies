@@ -1,7 +1,6 @@
-# Baseline set of EC2 policies for use in Compliance Framework plugins
+# Baseline set of Azure VM policies for use in Compliance Framework plugins
 
 ## Testing
-
 
 ```shell
 opa test policies
@@ -9,7 +8,7 @@ opa test policies
 
 ## Bundling
 
-Policies are built into bundle to make distribution easier. 
+Policies are built into a bundle to make distribution easier. 
 
 You can easily build the policies by running 
 ```shell
@@ -18,39 +17,30 @@ make build
 
 ## Running policies locally
 
+You can evaluate a policy using OPA's eval command. For example, to check the Azure VM root volume encryption policy:
+
 ```shell
-opa eval -I -b policies -f pretty data.compliance_framework.local_ssh <<EOF 
-{
-  "passwordauthentication": [
-    "yes"
-  ],
-  "permitrootlogin": [
-    "with-password"
-  ],
-  "pubkeyauthentication": [
-    "no"
-  ]
-}
-EOF
+opa eval -I -b policies -f pretty 'data.compliance_framework.unencrypted_root_volume.violation' -d policies/azure_virtual_machines_root_volume_encryption.rego -i <input.json>
 ```
 
-## Writing policies.
+Replace `<input.json>` with your test input file.
+
+## Writing policies
 
 Policies are written in the [Rego](https://www.openpolicyagent.org/docs/latest/policy-language/) language.
 
+Example policy (from this repo):
+
 ```rego
-package ssh.deny_password_auth
+package compliance_framework.unencrypted_root_volume
 
-import future.keywords.in
-
-violation[{
-    "title": "Host SSH is using password authentication.",
-    "description": "Host SSH should not use password, as this is insecure to brute force attacks from external sources.",
-    "remarks": "Migrate to using SSH Public Keys, and switch off password authentication."
-}] {
-	"yes" in input.passwordauthentication
+violation[{}] {
+  not input.instance.properties.securityProfile.encryptionAtHost
+  not input.instance.properties.storageProfile.osDisk.encryptionSettings.enabled
 }
 ```
+
+This policy triggers a violation only if both `encryptionAtHost` and `encryptionSettings.enabled` are false. If `encryptionAtHost` is true, no violation is triggered, regardless of the disk encryption setting.
 
 ## Metadata
 
@@ -72,3 +62,9 @@ Here is an example metadata:
 
 # your custom comment
 ```
+
+---
+
+## License
+
+This project is licensed under the GNU Affero General Public License v3.0. See the [LICENSE](LICENSE) file for details.
